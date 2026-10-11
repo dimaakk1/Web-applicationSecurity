@@ -1,10 +1,12 @@
 ﻿using BANK.BLL.Services;
 using BANK.DAL.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Web_applicationSecurity.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BankAccountsController : ControllerBase
