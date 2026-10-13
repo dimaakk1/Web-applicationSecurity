@@ -1,0 +1,56 @@
+@host = https://localhost:7021
+@auth = Basic YWRtaW46QWRtaW4xMjMh
+
+
+### 1. GET ALL ACCOUNTS
+
+GET {{host}}/api/BankAccounts
+Authorization: {{auth}}
+Accept: application/json
+
+> {%
+    client.global.set(
+        "csrfToken",
+        response.headers.valueOf("X-CSRF-TOKEN")
+    );
+%}
+
+
+### 2. GET ONE ACCOUNT
+
+GET {{host}}/api/BankAccounts/1
+Authorization: {{auth}}
+Accept: application/json
+
+
+### 3. CREATE ACCOUNT
+
+POST {{host}}/api/BankAccounts
+Authorization: {{auth}}
+X-CSRF-TOKEN: {{csrfToken}}
+Content-Type: application/json
+
+{
+  "ownerName": "Test User",
+  "balance": 5000
+}
+
+
+### 4. UPDATE ACCOUNT
+
+PUT {{host}}/api/BankAccounts/1
+Authorization: {{auth}}
+X-CSRF-TOKEN: {{csrfToken}}
+Content-Type: application/json
+
+{
+  "ownerName": "Updated User",
+  "balance": 7500
+}
+
+
+### 5. DELETE ACCOUNT
+
+DELETE {{host}}/api/BankAccounts/2
+Authorization: {{auth}}
+X-CSRF-TOKEN: {{csrfToken}}

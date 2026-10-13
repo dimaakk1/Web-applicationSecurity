@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System;
+using Web_applicationSecurity.Middleware;
 
 namespace Web_applicationSecurity
 {
@@ -66,7 +67,10 @@ namespace Web_applicationSecurity
         }
     });
             });
-
+            builder.Services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "X-CSRF-TOKEN";
+            });
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -83,10 +87,9 @@ namespace Web_applicationSecurity
 
             app.UseHttpsRedirection();
 
-
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseMiddleware<AuditMiddleware>();
 
             app.MapControllers();
 

@@ -1,5 +1,6 @@
 ﻿using BANK.BLL.Services;
 using BANK.DAL.Entity;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,15 +13,22 @@ namespace Web_applicationSecurity.Controllers
     public class BankAccountsController : ControllerBase
     {
         private readonly IBankAccountService _service;
-
-        public BankAccountsController(IBankAccountService service)
+        private readonly IAntiforgery _antiforgery;
+        public BankAccountsController(
+     IBankAccountService service,
+     IAntiforgery antiforgery)
         {
             _service = service;
+            _antiforgery = antiforgery;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BankAccount>>> GetAll()
         {
+            var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
+
+            Response.Headers["X-CSRF-TOKEN"] = tokens.RequestToken;
+
             var accounts = await _service.GetAllAsync();
 
             return Ok(accounts);
@@ -43,6 +51,8 @@ namespace Web_applicationSecurity.Controllers
         public async Task<ActionResult<BankAccount>> Create(
             BankAccount account)
         {
+            await _antiforgery.ValidateRequestAsync(HttpContext);
+
             try
             {
                 var createdAccount =
@@ -64,6 +74,8 @@ namespace Web_applicationSecurity.Controllers
             int id,
             BankAccount account)
         {
+            await _antiforgery.ValidateRequestAsync(HttpContext);
+
             try
             {
                 var updated =
@@ -85,6 +97,8 @@ namespace Web_applicationSecurity.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            await _antiforgery.ValidateRequestAsync(HttpContext);
+
             var deleted = await _service.DeleteAsync(id);
 
             if (!deleted)
