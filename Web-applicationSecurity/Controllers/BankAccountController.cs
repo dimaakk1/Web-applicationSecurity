@@ -21,7 +21,7 @@ namespace Web_applicationSecurity.Controllers
             _service = service;
             _antiforgery = antiforgery;
         }
-
+        [Authorize(Roles = "Admin,Manager,User")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BankAccount>>> GetAll()
         {
@@ -33,7 +33,7 @@ namespace Web_applicationSecurity.Controllers
 
             return Ok(accounts);
         }
-
+        [Authorize(Roles = "Admin,Manager,User")]
         [HttpGet("{id}")]
         public async Task<ActionResult<BankAccount>> GetById(int id)
         {
@@ -46,6 +46,7 @@ namespace Web_applicationSecurity.Controllers
 
             return Ok(account);
         }
+        [Authorize(Roles = "Admin,Manager")]
 
         [HttpPost]
         public async Task<ActionResult<BankAccount>> Create(
@@ -68,6 +69,7 @@ namespace Web_applicationSecurity.Controllers
                 return BadRequest(exception.Message);
             }
         }
+        [Authorize(Roles = "Admin,Manager")]
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(
@@ -93,6 +95,8 @@ namespace Web_applicationSecurity.Controllers
                 return BadRequest(exception.Message);
             }
         }
+
+        [Authorize(Roles = "Admin")]
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

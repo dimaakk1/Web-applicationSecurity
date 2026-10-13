@@ -1,0 +1,90 @@
+@host = https://localhost:7021
+
+@adminAuth = Basic YWRtaW46QWRtaW4xMjMh
+@managerAuth = Basic bWFuYWdlcjpNYW5hZ2VyMTIzIQ==
+@userAuth = Basic dXNlcjpVc2VyMTIzIQ==
+
+
+### 1. ADMIN - GET ALL
+GET {{host}}/api/BankAccounts
+Authorization: {{adminAuth}}
+Accept: application/json
+
+> {%
+    client.global.set(
+        "csrfToken",
+        response.headers.valueOf("X-CSRF-TOKEN")
+    );
+%}
+
+
+### 2. ADMIN - CREATE ACCOUNT
+POST {{host}}/api/BankAccounts
+Authorization: {{adminAuth}}
+X-CSRF-TOKEN: {{csrfToken}}
+Content-Type: application/json
+
+{
+  "ownerName": "Admin Created",
+  "balance": 5000
+}
+
+
+### 3. ADMIN - DELETE ACCOUNT
+DELETE {{host}}/api/BankAccounts/2
+Authorization: {{adminAuth}}
+X-CSRF-TOKEN: {{csrfToken}}
+
+
+### 4. MANAGER - GET ALL
+GET {{host}}/api/BankAccounts
+Authorization: {{managerAuth}}
+Accept: application/json
+
+
+### 5. MANAGER - CREATE ACCOUNT
+POST {{host}}/api/BankAccounts
+Authorization: {{managerAuth}}
+X-CSRF-TOKEN: {{csrfToken}}
+Content-Type: application/json
+
+{
+  "ownerName": "Manager Created",
+  "balance": 3500
+}
+
+
+### 6. MANAGER - DELETE ACCOUNT -  403
+DELETE {{host}}/api/BankAccounts/1
+Authorization: {{managerAuth}}
+X-CSRF-TOKEN: {{csrfToken}}
+
+
+### 7. USER - GET ALL
+GET {{host}}/api/BankAccounts
+Authorization: {{userAuth}}
+Accept: application/json
+
+
+### 8. USER - GET ONE
+GET {{host}}/api/BankAccounts/1
+Authorization: {{userAuth}}
+Accept: application/json
+
+
+### 9. USER - CREATE ACCOUNT - SHOULD BE 403
+POST {{host}}/api/BankAccounts
+Authorization: {{userAuth}}
+X-CSRF-TOKEN: {{csrfToken}}
+Content-Type: application/json
+
+{
+  "ownerName": "User Created",
+  "balance": 1000
+}
+
+
+### 10. USER - DELETE ACCOUNT - SHOULD BE 403
+DELETE {{host}}/api/BankAccounts/1
+Authorization: {{userAuth}}
+X-CSRF-TOKEN: {{csrfToken}}

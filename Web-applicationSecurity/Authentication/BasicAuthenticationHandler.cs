@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace BANK.BLL.Services
 {
     public class BasicAuthenticationHandler
-       : AuthenticationHandler<AuthenticationSchemeOptions>
+            : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -41,13 +41,15 @@ namespace BANK.BLL.Services
                 var authHeader = AuthenticationHeaderValue.Parse(
                     Request.Headers.Authorization!);
 
-                if (authHeader.Scheme != "Basic")
+                if (!authHeader.Scheme.Equals(
+                        "Basic",
+                        StringComparison.OrdinalIgnoreCase))
                 {
                     return AuthenticateResult.Fail(
                         "Invalid authentication scheme");
                 }
 
-                if (string.IsNullOrEmpty(authHeader.Parameter))
+                if (string.IsNullOrWhiteSpace(authHeader.Parameter))
                 {
                     return AuthenticateResult.Fail(
                         "Credentials are missing");
@@ -101,9 +103,21 @@ namespace BANK.BLL.Services
                         user.UserName!)
                 };
 
-                var identity = new ClaimsIdentity(
-                    claims,
-                    Scheme.Name);
+                var roles =
+                    await _userManager.GetRolesAsync(user);
+
+                foreach (var role in roles)
+                {
+                    claims.Add(
+                        new Claim(
+                            ClaimTypes.Role,
+                            role));
+                }
+
+                var identity =
+                    new ClaimsIdentity(
+                        claims,
+                        Scheme.Name);
 
                 var principal =
                     new ClaimsPrincipal(identity);
@@ -114,6 +128,11 @@ namespace BANK.BLL.Services
                         Scheme.Name);
 
                 return AuthenticateResult.Success(ticket);
+            }
+            catch (FormatException)
+            {
+                return AuthenticateResult.Fail(
+                    "Invalid Base64 credentials");
             }
             catch
             {

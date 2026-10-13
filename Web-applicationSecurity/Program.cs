@@ -4,6 +4,7 @@ using BANK.DAL.Data;
 using BANK.DAL.Entity;
 using BANK.DAL.Repository;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System;
@@ -13,7 +14,7 @@ namespace Web_applicationSecurity
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +24,9 @@ namespace Web_applicationSecurity
              builder.Configuration.GetConnectionString("DefaultConnection")
             ));
             builder.Services
-    .AddIdentityCore<ApplicationUser>()
-    .AddEntityFrameworkStores<AppDbContext>();
+     .AddIdentityCore<ApplicationUser>()
+     .AddRoles<IdentityRole>()
+     .AddEntityFrameworkStores<AppDbContext>();
 
             builder.Services
     .AddAuthentication("Basic")
@@ -77,7 +79,11 @@ namespace Web_applicationSecurity
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
-
+            using (var scope = app.Services.CreateScope())
+            {
+                await IdentitySeeder.SeedAsync(
+                    scope.ServiceProvider);
+            }
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
