@@ -1,0 +1,180 @@
+@host = https://localhost:7021
+
+@adminAuth = Basic YWRtaW46QWRtaW4xMjMh
+@managerAuth = Basic bWFuYWdlcjpNYW5hZ2VyMTIzIQ==
+@userAuth = Basic dXNlcjpVc2VyMTIzIQ==
+
+
+### 1. ADMIN - GET ALL -> 200
+GET {{host}}/api/BankAccounts
+Authorization: {{adminAuth}}
+Accept: application/json
+
+> {%
+    client.test("Admin GET ALL -> 200", function () {
+        client.assert(response.status === 200, "Expected 200");
+    });
+
+    client.global.set(
+        "adminCsrfToken",
+        response.headers.valueOf("X-CSRF-TOKEN")
+    );
+%}
+
+
+### 2. MANAGER - GET ALL -> 200
+GET {{host}}/api/BankAccounts
+Authorization: {{managerAuth}}
+Accept: application/json
+
+> {%
+    client.test("Manager GET ALL -> 200", function () {
+        client.assert(response.status === 200, "Expected 200");
+    });
+
+    client.global.set(
+        "managerCsrfToken",
+        response.headers.valueOf("X-CSRF-TOKEN")
+    );
+%}
+
+
+### 3. USER - GET ALL -> 200
+GET {{host}}/api/BankAccounts
+Authorization: {{userAuth}}
+Accept: application/json
+
+> {%
+    client.test("User GET ALL -> 200", function () {
+        client.assert(response.status === 200, "Expected 200");
+    });
+
+    client.global.set(
+        "userCsrfToken",
+        response.headers.valueOf("X-CSRF-TOKEN")
+    );
+%}
+
+
+### 4. ADMIN - CREATE -> 201
+POST {{host}}/api/BankAccounts
+Authorization: {{adminAuth}}
+X-CSRF-TOKEN: {{adminCsrfToken}}
+Content-Type: application/json
+
+{
+  "ownerName": "Admin Account",
+  "balance": 5000
+}
+
+> {%
+    client.test("Admin POST -> 201", function () {
+        client.assert(response.status === 201, "Expected 201");
+    });
+
+    var location = response.headers.valueOf("Location");
+    var adminId = location.substring(location.lastIndexOf("/") + 1);
+
+    client.global.set("adminAccountId", adminId);
+%}
+
+
+### 5. MANAGER - CREATE -> 201
+POST {{host}}/api/BankAccounts
+Authorization: {{managerAuth}}
+X-CSRF-TOKEN: {{managerCsrfToken}}
+Content-Type: application/json
+
+{
+  "ownerName": "Manager Account",
+  "balance": 3500
+}
+
+> {%
+    client.test("Manager POST -> 201", function () {
+        client.assert(response.status === 201, "Expected 201");
+    });
+
+    var location = response.headers.valueOf("Location");
+    var managerId = location.substring(location.lastIndexOf("/") + 1);
+
+    client.global.set("managerAccountId", managerId);
+%}
+
+
+### 6. USER - CREATE -> 403
+POST {{host}}/api/BankAccounts
+Authorization: {{userAuth}}
+X-CSRF-TOKEN: {{userCsrfToken}}
+Content-Type: application/json
+
+{
+  "ownerName": "User Account",
+  "balance": 1000
+}
+
+> {%
+    client.test("User POST -> 403", function () {
+        client.assert(response.status === 403, "Expected 403");
+    });
+%}
+
+
+### 7. ADMIN - UPDATE -> 204
+PUT {{host}}/api/BankAccounts/{{adminAccountId}}
+Authorization: {{adminAuth}}
+X-CSRF-TOKEN: {{adminCsrfToken}}
+Content-Type: application/json
+
+{
+  "ownerName": "Updated By Admin",
+  "balance": 8000
+}
+
+> {%
+    client.test("Admin PUT -> 204", function () {
+        client.assert(response.status === 204, "Expected 204");
+    });
+%}
+
+
+### 8. USER - UPDATE -> 403
+PUT {{host}}/api/BankAccounts/{{adminAccountId}}
+Authorization: {{userAuth}}
+X-CSRF-TOKEN: {{userCsrfToken}}
+Content-Type: application/json
+
+{
+  "ownerName": "Updated By User",
+  "balance": 10
+}
+
+> {%
+    client.test("User PUT -> 403", function () {
+        client.assert(response.status === 403, "Expected 403");
+    });
+%}
+
+
+### 9. MANAGER - DELETE -> 403
+DELETE {{host}}/api/BankAccounts/{{managerAccountId}}
+Authorization: {{managerAuth}}
+X-CSRF-TOKEN: {{managerCsrfToken}}
+
+> {%
+    client.test("Manager DELETE -> 403", function () {
+        client.assert(response.status === 403, "Expected 403");
+    });
+%}
+
+
+### 10. ADMIN - DELETE -> 204
+DELETE {{host}}/api/BankAccounts/{{managerAccountId}}
+Authorization: {{adminAuth}}
+X-CSRF-TOKEN: {{adminCsrfToken}}
+
+> {%
+    client.test("Admin DELETE -> 204", function () {
+        client.assert(response.status === 204, "Expected 204");
+    });
+%}

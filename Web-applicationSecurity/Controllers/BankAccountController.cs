@@ -112,5 +112,19 @@ namespace Web_applicationSecurity.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("admin-only")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult AdminOnly()
+        {
+            return Ok("Only Admin can access this route");
+        }
+
+        [HttpGet("manager")]
+        [Authorize(Roles = "Admin,Manager")]
+        public IActionResult ManagerAccess()
+        {
+            return Ok("Admin or Manager access");
+        }
     }
 }
