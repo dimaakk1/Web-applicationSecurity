@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.37012.4
@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 		csrf-audit.http = csrf-audit.http
 		multi-user.http = multi-user.http
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web-applicationSecurity.Tests", "Web-applicationSecurity.Tests\Web-applicationSecurity.Tests.csproj", "{C43AD845-9452-43BF-B1ED-C41B35FD4633}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,10 @@ Global
 		{9B4D7C7A-6DFE-4F0B-9779-90FD9C6C91E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B4D7C7A-6DFE-4F0B-9779-90FD9C6C91E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B4D7C7A-6DFE-4F0B-9779-90FD9C6C91E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C43AD845-9452-43BF-B1ED-C41B35FD4633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C43AD845-9452-43BF-B1ED-C41B35FD4633}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C43AD845-9452-43BF-B1ED-C41B35FD4633}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C43AD845-9452-43BF-B1ED-C41B35FD4633}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
